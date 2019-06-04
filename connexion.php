@@ -14,21 +14,21 @@ Page: connexion.php
         }
         else {
           $codeAgent= trim($_POST['login']);
-          $server = "172.17.0.201"; //Adresse du serveur Active Directory : chcb.local
+          $serveur = "172.17.0.201"; //Adresse du serveur Active Directory : chcb.local
           $racine = "DC=chcb,DC=local"; //DN (nom distingué) de la racine de l'annuaire AD
 
+          $DN = Shell_Exec('powershell -executionpolicy unrestricted -command ./Scripts/RecupDN.ps1 \"'.$codeAgent.'\"');// Identifiant de connexion à l'annuaire récupéré du formulaire de connexion
 
-          $rootdn = Shell_Exec('powershell -executionpolicy unrestricted -command ./Scripts/RecupDN.ps1 \"'.$codeAgent.'\"');// Identifiant de connexion à l'annuaire récupéré du formulaire de connexion
+          $mdp = $_POST['mdp']; //Mot de passe de connexion à l'annuaire
 
-          $rootpw = $_POST['mdp']; //Mot de passe de connexion à l'annuaire
+          $ds=ldap_connect($serveur); //Connection au serveur AD
 
-          $ds=ldap_connect($server); //Connection au serveur AD
+          $r=ldap_bind($ds,$DN,$mdp);//Authentification à l'annaire
 
-          $r=ldap_bind($ds,$rootdn,$rootpw);//Authentification à l'annaire
-
-          if($r && !empty($rootdn)){
+          if($r && !empty($DN)){
 
           session_start();
+
           $_SESSION['codeAgent'] = $codeAgent;
 
           header('Location: ./listeRepertoires.php');
@@ -37,14 +37,6 @@ Page: connexion.php
           else {
             header('Location: ./index.php?erreur=erreur');
           }
-
-
-?>
-
-
-  <?php
-
         }
       }
-
 ?>

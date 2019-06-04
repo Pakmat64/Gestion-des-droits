@@ -10,10 +10,6 @@
   </div>
 
   <div class=" container-fluid ">
-
-      <div id="resultat">
-
-        </div>
       <div class="row  " style="height: 90vh">
         <div class="col-3 m-auto ">
             <h2>Connectez-vous !</h2>

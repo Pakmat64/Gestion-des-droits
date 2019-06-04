@@ -74,7 +74,8 @@
         <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#formulaire">Ajouter une personne</button>
       </center>
     </div>
-
+<div id="test">
+</div>
   <!-- Modal -->
   <div class="modal fade" id="formulaire" >
     <div class="modal-dialog">
@@ -91,12 +92,13 @@
         <div class="modal-body row">
           <form id="ajout" class="col" action="./Appels/ajout.php" method="post">
           <div class="form-group">
+
             <label for="codeAgent">Entrez son code agent</label>
             <input type="text" class="form-control" id="codeAgent" name="codeAgent"></input>
             <label class="error" for="codeAgent" id="codeAgent_erreur">Veuillez remplir ce champs</label>
           </div>
 
-          <button type="submit" class="btn btn-primary" >Ajouter</button>
+          <button id="nul" type="submit" class="btn btn-primary" >Ajouter</button>
             </form>
 
         </div>
@@ -107,39 +109,35 @@
     <script>
 
     function supprimer(codeAgent,nom){
-
-
+        var repertoire = "<?php echo 'ggss'.$repertoire; ?>";
         nom = nom.replace('_',' ');
         confirmer= confirm('Etes vous sûr de vouloir supprimer '+nom+' ?')
         if(confirmer == true){
-          //document.location.href='./Appels/supp.php?action=supprimer&id='+boutton.id;
-          $.post('./Appels/supp.php',{'id':codeAgent,'nom':nom})
+          $.post('./Appels/supp.php',{'id':codeAgent,'nom':nom, 'repertoire':repertoire})
           .done(function(data){
-
-
-
               location.reload();
-              //$('#action').html('ok');
           })
-
         }
-
-
     }
 
     $(function(){
       $('form#ajout').submit(function(e){
         e.preventDefault()
         var $formAjout = $(this)
-
-       var verif = $("#codeAgent").val()
+      var repertoire = "<?php echo 'ggss'.$repertoire; ?>";
+       var codeAgent = $("#codeAgent").val()
        var regex = new RegExp("")
 
-        if(regex.test(verif)){
-          $.post($formAjout.attr('action'),$formAjout.serialize())
+        if(regex.test(codeAgent)){
+          //$.post($formAjout.attr('action'),$formAjout.serialize())
+          $.post('./Appels/ajout.php',{'rep':repertoire,'codeAgent':codeAgent})
+
           .done(function(data){
             $('#formulaire .close').click()
+            $('#test').html(data);
             location.reload();
+
+
           })
 
         .fail(function(){

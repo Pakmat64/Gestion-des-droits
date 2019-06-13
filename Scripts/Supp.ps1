@@ -4,5 +4,11 @@
 [parameter(Mandatory=$true)][string]$repertoire
 )
 
- Remove-ADGroupMember -Identity $repertoire -Members $personne -Confirm:$false
+if (Get-Module -ListAvailable -Name ActiveDirectory) {
 
+}
+else{
+   import-module ActiveDirectory
+}
+
+ Remove-ADGroupMember -Identity $repertoire -Members $personne -Confirm:$false

@@ -1,7 +1,13 @@
 ﻿Param(
-[parameter(Mandatory=$true)][string]$personne,
-[parameter(Mandatory=$true)][string]$repertoire
+[parameter(Mandatory=$true)][string]$codeAgent,
+[parameter(Mandatory=$true)][string]$groupe
 )
 
-Add-ADGroupMember -Identity $repertoire -Members $personne
+if (Get-Module -ListAvailable -Name ActiveDirectory) {
+   
+}
+else{
+   import-module ActiveDirectory 
+}
 
+Add-ADGroupMember -Identity $groupe -Members $codeAgent

@@ -1,16 +1,18 @@
-
-
 <?php
-          session_start(); //On récupère la session précédente
-          $repertoire =$_GET['repertoire'];
-          $titre = 'Liste des personnes - '.$repertoire;
 
-          //Récupération de la liste des personnes
-          $results = Shell_Exec ('C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy unrestricted -command .\Scripts\liste_membres.ps1 ggss'.$repertoire);
+  session_start(); //On récupère la session précédente
 
-          $liste = explode(',',$results);
+  $repertoire = $_GET['repertoire'];
 
-           ob_start();
+  //Récupération de la liste des personnes
+  $results = Shell_Exec ('C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy unrestricted -command .\Scripts\liste_membres.ps1 ggss'.$repertoire);
+
+  $liste = explode(',',$results);
+
+  $titre = 'Liste des personnes - '.$repertoire;
+
+  ob_start();
+
 ?>
 
 <!-- M E N U -->
@@ -24,7 +26,7 @@
 <br>
 
 <!-- L I S T E  D E S  P E R S O N N E S -->
-<div class="container" >
+<div class="container">  <!-- Vous pouvez ici remplacer la classe par container-fluid pour un tableau plus large -->
   <h1>Liste des personnes du dossier <?php echo $repertoire ?> </h1>
   <br>
   <table class="table ">
@@ -38,13 +40,12 @@
     </thead>
     <tbody>
 
-
+<!-- Affichage itératif de chaque membres -->
 <?php
 
-
-    //print_r($liste);
     foreach($liste as $cle =>$personne){
         if(isset($liste[$cle+1])){
+
       $personne = explode(':',$personne);
 
       $codeAgent = trim($personne[0]);
@@ -54,19 +55,29 @@
       echo '<tr>
               <td>' .$nom.'</td>
               <td>'.$codeAgent.'</td>
-              <td>';
-      if($codeAgent != '( Groupe )'){ //On fait cela puisqu'on ne peut pas supprimer un groupe
-              echo '<button type="button" id="'.$codeAgent.'" onclick="supprimer(`'.$codeAgent.'`,`'.strtr($nom,' ','_').'`)" class="btn btn-outline-danger">Supprimer</button></td>';
-      }
-            echo '</tr>';
+              <td>
+              <button type="button" id="'.$codeAgent.'" onclick="supprimer(`'.$codeAgent.'`,`'.strtr($nom,' ','_').'`)" class="btn btn-outline-danger">Supprimer</button></td>
+            </tr>';
       }
     }
     echo '</tbody>
-        </table>
-        <div id="action"></div>
-      </div>';
+        </table>';
 
 ?>
+<script>
+
+  function supprimer(codeAgent,nom){
+      var groupe = "<?php echo 'ggss'.$repertoire; ?>";
+      nom = nom.replace('_',' ');
+      confirmer= confirm('Etes vous sûr de vouloir supprimer '+nom+' ?')
+      if(confirmer == true){
+        $.post('./Appels/supp.php',{'id':codeAgent,'nom':nom, 'groupe':groupe})
+        .done(function(data){
+            location.reload();
+        })
+      }
+  }
+</script>
 
     <div class="container">
       <center>
@@ -98,7 +109,7 @@
             <label class="error" for="codeAgent" id="codeAgent_erreur">Veuillez remplir ce champs</label>
           </div>
 
-          <button id="nul" type="submit" class="btn btn-primary" >Ajouter</button>
+          <button  type="submit" class="btn btn-primary" >Ajouter</button>
             </form>
 
         </div>
@@ -108,36 +119,22 @@
 
     <script>
 
-    function supprimer(codeAgent,nom){
-        var repertoire = "<?php echo 'ggss'.$repertoire; ?>";
-        nom = nom.replace('_',' ');
-        confirmer= confirm('Etes vous sûr de vouloir supprimer '+nom+' ?')
-        if(confirmer == true){
-          $.post('./Appels/supp.php',{'id':codeAgent,'nom':nom, 'repertoire':repertoire})
-          .done(function(data){
-              location.reload();
-          })
-        }
-    }
-
+    // A J O U T  M E M B R E
     $(function(){
       $('form#ajout').submit(function(e){
         e.preventDefault()
         var $formAjout = $(this)
       var repertoire = "<?php echo 'ggss'.$repertoire; ?>";
        var codeAgent = $("#codeAgent").val()
-       var regex = new RegExp("")
+       var regex = new RegExp("[0-9]{6}")
 
         if(regex.test(codeAgent)){
-          //$.post($formAjout.attr('action'),$formAjout.serialize())
           $.post('./Appels/ajout.php',{'rep':repertoire,'codeAgent':codeAgent})
 
           .done(function(data){
             $('#formulaire .close').click()
-            $('#test').html(data);
+            //$('#test').html(data);
             location.reload();
-
-
           })
 
         .fail(function(){
@@ -149,11 +146,7 @@
 			    $("label#codeAgent_erreur").show();
 			    $("input#codeAgent").focus();
         }
-
       })
-
-
-
     })
   </script>
   <?php

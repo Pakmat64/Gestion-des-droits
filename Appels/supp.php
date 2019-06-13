@@ -2,13 +2,7 @@
 
   if(isset($_POST['id'])){
     $codeAgent = $_POST['id'];
-    $nom = $_POST['nom'];
-    $repertoire = $_POST['repertoire'];
+    $repertoire = $_POST['groupe'];
 
-
-$commande = "powershell -ExecutionPolicy unrestricted -command ../Scripts/Supp.ps1 -personne ".$codeAgent.' '.$repertoire;
-
-Shell_Exec($commande);
-
-
+    Shell_Exec( "powershell -ExecutionPolicy unrestricted -command ../Scripts/Supp.ps1 -personne ".$codeAgent.' '.$repertoire);
   }

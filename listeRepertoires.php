@@ -1,6 +1,6 @@
 <?php
 
-  session_start();
+  session_start();//On récupère la session précédente
 
   if(isset($_SESSION['codeAgent'])){
     $codeAgent = $_SESSION['codeAgent'];
